@@ -13,4 +13,4 @@ class renderMap:
                     tile = self.tmx_data.get_tile_image_by_gid(gid)
                     if tile:
                         pos = (x * self.tmx_data.tilewidth, y * self.tmx_data.tileheight)
-                        screen.blit(tile, camera.apply(pygame.Rect(pos, (0, 0))))
+                        screen.blit(tile, camera.apply_rect(pygame.Rect(pos, (0, 0))))

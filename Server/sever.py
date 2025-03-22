@@ -1,20 +1,24 @@
 import socket, threading, json, time
-from Network.configsever import HOST, PORT, PLAYER_SIZE, PLAYER_SPEED
-
-clients = {}  
-players = {}  #{"x": int, "y": int, "color": [r,g,b]}
+from Server.configsever import HOST, PORT
+from Server.sever_player import ServerPlayer
+from Collision.collision_map import CollisionMap
+clients = {}  # {player_id: conn}
+players = {}  # {player_id: ServerPlayer}
 colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0)]
-
+collision_map = CollisionMap("TileSet_Map/Mario_Test_Map_Cao15.tmx")
 def handle_client(conn, player_id):
     print(f"[KẾT NỐI] Người chơi {player_id} đã tham gia.")
+    x, y = 100 + player_id * 100, 500
+    color = colors[player_id % len(colors)]
+    players[str(player_id)] = ServerPlayer(x, y, color,collision_map)
+
     init_data = {
         "player_id": player_id,
-        "color": colors[player_id % len(colors)],
-        "x": 100 + player_id * 100,
-        "y": 100
+        "color": color,
+        "x": x,
+        "y": y
     }
-    players[str(player_id)] = {"x": init_data["x"], "y": init_data["y"], "color": init_data["color"]}
-    conn.sendall(f"INIT:{json.dumps(init_data)}\n".encode()) #json.dump bien thanh json
+    conn.sendall(f"INIT:{json.dumps(init_data)}\n".encode())
 
     try:
         while True:
@@ -22,32 +26,32 @@ def handle_client(conn, player_id):
             if not data:
                 break
             inputs = json.loads(data)
-            if "LEFT" in inputs:
-                players[str(player_id)]["x"] -= PLAYER_SPEED
-            if "RIGHT" in inputs:
-                players[str(player_id)]["x"] += PLAYER_SPEED
-            if "UP" in inputs:
-                players[str(player_id)]["y"] -= PLAYER_SPEED
-            if "DOWN" in inputs:
-                players[str(player_id)]["y"] += PLAYER_SPEED
+            players[str(player_id)].handle_input(inputs)
     except:
         pass
     finally:
         print(f"[NGẮT] Người chơi {player_id} đã thoát.")
         conn.close()
-        if str(player_id) in players: del players[str(player_id)]
-        if player_id in clients: del clients[player_id]
+        players.pop(str(player_id), None)
+        clients.pop(player_id, None)
 
 def broadcast_loop():
     while True:
         if clients:
-            state = f"STATE:{json.dumps(players)}\n".encode()
+            for player in players.values():
+                player.update()
+
+            state = {
+                str(pid): player.get_state()
+                for pid, player in players.items()
+            }
+            state_data = f"STATE:{json.dumps(state)}\n".encode()
             for conn in clients.values():
                 try:
-                    conn.sendall(state)
+                    conn.sendall(state_data)
                 except:
                     pass
-        time.sleep(0.02)  # Giới hạn tốc độ gửi (50 lần/giây)
+        time.sleep(0.02)
 
 def start_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

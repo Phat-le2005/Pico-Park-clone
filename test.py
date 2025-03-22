@@ -1,10 +1,10 @@
 import pygame
 import sys
 
-from Network.configsever import *
+from Server.configsever import *
 from core.map import renderMap
 from core.camera import camerase
-from core.player import Player
+from core.playertest import Player
 
 def main():
     pygame.init()
@@ -19,7 +19,7 @@ def main():
     camera = camerase(tile_map.tmx_data.width * tile_map.tmx_data.tilewidth,
                       tile_map.tmx_data.height * tile_map.tmx_data.tileheight)
 
-    player = Player(300, 200, (255, 0, 0))  # Player màu đỏ dễ thấy
+    player = Player(300, 750, (255, 0, 0))  # Player màu đỏ dễ thấy
 
     # Vòng lặp game
     while True:

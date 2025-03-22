@@ -7,9 +7,11 @@ class camerase:
         self.height = height
 
   
-    def apply(self, target_rect):
-        
-        return target_rect.rect.move(-self.camera.x, -self.camera.y)
+    def apply(self, target):
+        return target.rect.move(-self.camera.x, -self.camera.y)
+
+    def apply_rect(self, rect):
+        return rect.move(-self.camera.x, -self.camera.y)
 
 
     def update(self, players, map_width, map_height, screen_width, screen_height):

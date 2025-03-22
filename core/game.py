@@ -1,5 +1,5 @@
 import pygame
-from core.player import Player
+from core.playertest import Player
 
 class Game:
     def __init__(self, screen):
