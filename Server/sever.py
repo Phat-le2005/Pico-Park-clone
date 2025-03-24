@@ -4,7 +4,7 @@ from Server.sever_player import ServerPlayer
 from Collision.collision_map import CollisionMap
 clients = {}  # {player_id: conn}
 players = {}  # {player_id: ServerPlayer}
-colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0)]
+colors = [1,2,3]
 collision_map = CollisionMap("TileSet_Map/Mario_Test_Map_Cao15.tmx")
 def handle_client(conn, player_id):
     print(f"[KẾT NỐI] Người chơi {player_id} đã tham gia.")

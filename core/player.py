@@ -4,10 +4,10 @@ import os
 class Player:
     def __init__(self, x, y, color):
         self.animations = {
-            "stand": self.load_frames("p1_stand", 1),
-            "walk": self.load_frames("p1_walk", 11),
-            "jump": self.load_frames("p1_jump", 1),
-            "fall": self.load_frames("p1_jump",1)
+            "stand": self.load_frames(f"p{color}_stand", 1),
+            "walk": self.load_frames(f"p{color}_walk", 11),
+            "jump": self.load_frames(f"p{color}_jump", 1),
+            "fall": self.load_frames(f"p{color}_jump",1)
         }
         self.state = "stand"
         self.image = self.animations[self.state][0]
